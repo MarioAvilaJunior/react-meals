@@ -1,17 +1,15 @@
+import React from "react";
 import classes from "./Cart.module.css";
 import { IMeal } from "../Meals/IMeal";
 import Modal from "../UI/Modal";
 
-interface ICartItem {
-  id: string;
-  name: string;
+export interface ICartItem extends IMeal {
   amount: number;
-  price: number;
 }
 
-const Cart = (): JSX.Element => {
+const Cart = ({ onCloseCart }: { onCloseCart: () => void }): JSX.Element => {
   const dummyMeals: ICartItem[] = [
-    { id: "c1", name: "Sushi", amount: 2, price: 12.99 },
+    { id: "c1", name: "Sushi", amount: 2, price: 12.99, description: "" },
   ];
   const cartItems = (
     <ul>
@@ -22,14 +20,16 @@ const Cart = (): JSX.Element => {
   );
 
   return (
-    <Modal>
+    <Modal onClick={onCloseCart}>
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
         <span>35.99</span>
       </div>
       <div className={classes.actions}>
-        <button className={classes["button--alt"]}>Close</button>
+        <button className={classes["button--alt"]} onClick={onCloseCart}>
+          Close
+        </button>
         <button className={classes.button}>Order</button>
       </div>
     </Modal>
