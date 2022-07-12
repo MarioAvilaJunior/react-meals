@@ -1,16 +1,19 @@
 import React from "react";
 import { ICartItem } from "../components/Cart/Cart";
 
-export interface ICart {
+export interface ICartState {
   items: ICartItem[];
-  totalAmount: number;
+  totalPrice: number;
+}
+
+export interface ICart extends ICartState {
   addItem: (item: ICartItem) => void;
   removeItem: (id: string) => void;
 }
 
 const CartContext = React.createContext<ICart>({
   items: [],
-  totalAmount: 0,
+  totalPrice: 0,
   addItem: (item) => {},
   removeItem: (id) => {},
 });
