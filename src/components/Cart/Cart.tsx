@@ -14,7 +14,7 @@ const Cart = ({ onCloseCart }: { onCloseCart: () => void }): JSX.Element => {
   const cartItems = (
     <ul>
       {dummyMeals.map((item) => {
-        return <li>{item.name}</li>;
+        return <li key={item.id}>{item.name}</li>;
       })}
     </ul>
   );

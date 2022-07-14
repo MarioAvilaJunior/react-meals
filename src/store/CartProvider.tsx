@@ -3,8 +3,8 @@ import CartContext, { ICart, ICartState } from "./cart-context";
 import { ICartItem } from "../components/Cart/Cart";
 
 enum CartActionType {
-  ADD_CART_ITEM = "ADD_CART_ITEM",
-  REMOVE_CART_ITEM = "REMOVE_CART_ITEM",
+  ADD_CART_ITEM,
+  REMOVE_CART_ITEM,
 }
 
 interface ICartAction {
@@ -19,12 +19,14 @@ const defaultCartState: ICartState = {
 };
 
 const cartReducer = (state: ICartState, action: ICartAction): ICartState => {
+  console.table(state.items);
   switch (action.type) {
     case CartActionType.ADD_CART_ITEM: {
       const updatedItemArray = state.items.concat(action.item!);
       const { price, amount } = action.item!;
       const updatedTotalPrice = state.totalPrice + price * amount;
       return {
+        ...state,
         items: updatedItemArray,
         totalPrice: updatedTotalPrice,
       };
@@ -49,8 +51,8 @@ const CartProvider = (props: { children: React.ReactNode }): JSX.Element => {
   };
 
   const cartContext: ICart = {
-    items: [],
-    totalPrice: 0,
+    items: cartState.items,
+    totalPrice: cartState.totalPrice,
     addItem: addItemToCartHandler,
     removeItem: removeItemFromCartHandler,
   };
