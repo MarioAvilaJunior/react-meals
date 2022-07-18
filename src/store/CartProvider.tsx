@@ -19,22 +19,57 @@ const defaultCartState: ICartState = {
 };
 
 const cartReducer = (state: ICartState, action: ICartAction): ICartState => {
-  console.table(state.items);
+  let existingCartItemIndex: number;
+  let updatedItems: ICartItem[];
+  let existingCartItem: ICartItem;
+  let updatedTotalPrice: number;
   switch (action.type) {
     case CartActionType.ADD_CART_ITEM: {
-      const updatedItemArray = state.items.concat(action.item!);
       const { price, amount } = action.item!;
-      const updatedTotalPrice = state.totalPrice + price * amount;
+      updatedTotalPrice = state.totalPrice + price * amount;
+
+      existingCartItemIndex = state.items.findIndex((item) => {
+        return item.id === action.item?.id;
+      });
+
+      existingCartItem = state.items[existingCartItemIndex];
+      updatedItems = state.items.concat(action.item!);
+      if (existingCartItem) {
+        updatedItems = [...state.items];
+        const updatedItem = {
+          ...existingCartItem,
+          amount: existingCartItem.amount + action.item!.amount,
+        };
+        updatedItems[existingCartItemIndex] = updatedItem;
+      }
+
       return {
         ...state,
-        items: updatedItemArray,
+        items: updatedItems,
         totalPrice: updatedTotalPrice,
       };
     }
     case CartActionType.REMOVE_CART_ITEM: {
+      existingCartItemIndex = state.items.findIndex((item) => {
+        return item.id === action.id;
+      });
+      existingCartItem = { ...state.items[existingCartItemIndex] };
+      existingCartItem.amount -= 1;
+      updatedItems = [...state.items];
+      updatedItems[existingCartItemIndex] = existingCartItem;
+      if (existingCartItem.amount === 0) {
+        updatedItems = state.items.filter((item) => {
+          return item.id != existingCartItem.id;
+        });
+      }
+      updatedTotalPrice = state.totalPrice - existingCartItem.price;
+      return {
+        ...state,
+        items: updatedItems,
+        totalPrice: updatedTotalPrice,
+      };
     }
   }
-  return { ...state };
 };
 
 const CartProvider = (props: { children: React.ReactNode }): JSX.Element => {

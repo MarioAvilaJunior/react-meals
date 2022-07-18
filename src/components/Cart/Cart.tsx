@@ -16,8 +16,13 @@ const Cart = ({ onCloseCart }: { onCloseCart: () => void }): JSX.Element => {
 
   const isValidOrder = cartCtx.items.length > 0;
 
-  const removeItemHandler = (id: string) => {};
-  const addItemHandler = (item: ICartItem) => {};
+  const removeItemHandler = (id: string) => {
+    cartCtx.removeItem(id);
+  };
+
+  const addItemHandler = (item: ICartItem) => {
+    cartCtx.addItem({ ...item, amount: 1 });
+  };
 
   const cartItems = (
     <ul className={classes["cart-items"]}>
