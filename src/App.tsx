@@ -4,6 +4,9 @@ import Meals from "./components/Meals/Meals";
 import Cart from "./components/Cart/Cart";
 import CartProvider from "./store/CartProvider";
 
+export const databaseURL =
+  "https://react-academind-session15-default-rtdb.firebaseio.com/";
+
 const App = (): JSX.Element => {
   const [showCart, setShowCart] = React.useState<boolean>(true);
   const closeCart = (): void => {

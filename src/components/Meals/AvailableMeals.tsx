@@ -1,40 +1,47 @@
+import React from "react";
 import Card from "../UI/Card";
 import { IMeal } from "./IMeal";
 import MealItem from "./MealItem/MealItem";
-
-const DUMMY_MEALS: IMeal[] = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
+import useHTTP from "../../hooks/useHTTP";
+import { databaseURL } from "../../App";
 
 const AvailableMeals = () => {
+  const [meals, setMeals] = React.useState<IMeal[]>([]);
+
+  const transformMeals = (dataObj: IMeal[]): void => {
+    const loadedMeals: IMeal[] = [];
+
+    for (const taskKey in dataObj) {
+      loadedMeals.push({
+        id: taskKey,
+        name: dataObj[taskKey].name,
+        description: dataObj[taskKey].description,
+        price: dataObj[taskKey].price,
+      });
+    }
+
+    setMeals(loadedMeals);
+  };
+
+  const {
+    isLoading,
+    error,
+    sendRequest: getAllMeals,
+  } = useHTTP<IMeal[]>(databaseURL + "/meals.json", transformMeals);
+
+  React.useEffect(() => {
+    getAllMeals();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Card>
         <ul>
-          {DUMMY_MEALS.map((meal) => (
+          {meals.map((meal) => (
             <MealItem
               key={meal.id}
               id={meal.id}
