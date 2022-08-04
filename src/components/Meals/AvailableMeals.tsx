@@ -8,30 +8,25 @@ import { databaseURL } from "../../App";
 const AvailableMeals = () => {
   const [meals, setMeals] = React.useState<IMeal[]>([]);
 
-  const transformMeals = (dataObj: IMeal[]): void => {
-    const loadedMeals: IMeal[] = [];
-
-    for (const taskKey in dataObj) {
-      loadedMeals.push({
-        id: taskKey,
-        name: dataObj[taskKey].name,
-        description: dataObj[taskKey].description,
-        price: dataObj[taskKey].price,
-      });
-    }
-
-    setMeals(loadedMeals);
-  };
-
-  const {
-    isLoading,
-    error,
-    sendRequest: getAllMeals,
-  } = useHTTP<IMeal[]>(databaseURL + "/meals.json", transformMeals);
+  const { isLoading, error, sendHTTPRequest: getAllMeals } = useHTTP<IMeal[]>();
 
   React.useEffect(() => {
-    getAllMeals();
-  }, []);
+    const transformMeals = (dataObj: IMeal[]): void => {
+      const loadedMeals: IMeal[] = [];
+
+      for (const taskKey in dataObj) {
+        loadedMeals.push({
+          id: taskKey,
+          name: dataObj[taskKey].name,
+          description: dataObj[taskKey].description,
+          price: dataObj[taskKey].price,
+        });
+      }
+      setMeals(loadedMeals);
+    };
+
+    getAllMeals(databaseURL + "/meals.json", transformMeals);
+  }, [getAllMeals]);
 
   if (isLoading) {
     return <div>Loading...</div>;

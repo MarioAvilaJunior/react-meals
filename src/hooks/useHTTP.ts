@@ -6,40 +6,43 @@ interface IRequestConfig {
   body?: BodyInit;
 }
 
-const useHTTP = <T>(
-  url: string,
-  applyData: (data: T) => void,
-  requestConfig?: IRequestConfig
-) => {
+const useHTTP = <T>() => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
 
-  const sendRequest = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(url, {
-        method: requestConfig?.method || "GET",
-        headers: requestConfig?.headers || {},
-        body: requestConfig?.body ? JSON.stringify(requestConfig.body) : null,
-      });
+  const sendHTTPRequest = React.useCallback(
+    async (
+      url: string,
+      applyData: (data: T) => void,
+      requestConfig?: IRequestConfig
+    ) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(url, {
+          method: requestConfig?.method || "GET",
+          headers: requestConfig?.headers || {},
+          body: requestConfig?.body ? JSON.stringify(requestConfig.body) : null,
+        });
 
-      if (!response.ok) {
-        throw new Error("Request failed!");
+        if (!response.ok) {
+          throw new Error("Request failed!");
+        }
+
+        const data: T = await response.json();
+        applyData(data);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong!");
       }
-
-      const data: T = await response.json();
-      applyData(data);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong!");
-    }
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    },
+    []
+  );
 
   return {
     isLoading,
     error,
-    sendRequest,
+    sendHTTPRequest,
   };
 };
 
