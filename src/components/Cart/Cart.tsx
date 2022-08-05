@@ -9,7 +9,12 @@ export interface ICartItem extends IMeal {
   amount: number;
 }
 
-const Cart = ({ onCloseCart }: { onCloseCart: () => void }): JSX.Element => {
+interface ICartProps {
+  onCloseCart: () => void;
+  onOpenForm: () => void;
+}
+
+const Cart = ({ onCloseCart, onOpenForm }: ICartProps): JSX.Element => {
   const cartCtx = React.useContext(CartContext);
 
   const totalPrice = `$${cartCtx.totalPrice.toFixed(2)}`;
@@ -54,7 +59,11 @@ const Cart = ({ onCloseCart }: { onCloseCart: () => void }): JSX.Element => {
         <button className={classes["button--alt"]} onClick={onCloseCart}>
           Close
         </button>
-        {isValidOrder && <button className={classes.button}>Order</button>}
+        {isValidOrder && (
+          <button className={classes.button} onClick={onOpenForm}>
+            Order
+          </button>
+        )}
       </div>
     </Modal>
   );
