@@ -7,7 +7,6 @@ import { databaseURL } from "../../App";
 
 const AvailableMeals = () => {
   const [meals, setMeals] = React.useState<IMeal[]>([]);
-
   const { isLoading, error, sendHTTPRequest: getAllMeals } = useHTTP<IMeal[]>();
 
   React.useEffect(() => {
@@ -29,25 +28,29 @@ const AvailableMeals = () => {
   }, [getAllMeals]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div style={{ textAlign: "center" }}>Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <section style={{ textAlign: "center", color: "red" }}>{error}</section>
+    );
   }
 
   return (
-    <>
-      <Card>
-        <ul>
-          {meals.map((meal) => (
-            <MealItem
-              key={meal.id}
-              id={meal.id}
-              description={meal.description}
-              name={meal.name}
-              price={meal.price}
-            />
-          ))}
-        </ul>
-      </Card>
-    </>
+    <Card>
+      <ul>
+        {meals.map((meal) => (
+          <MealItem
+            key={meal.id}
+            id={meal.id}
+            description={meal.description}
+            name={meal.name}
+            price={meal.price}
+          />
+        ))}
+      </ul>
+    </Card>
   );
 };
 

@@ -1,7 +1,15 @@
 import React from "react";
 import useInput from "../../hooks/useInput";
+import useHTTP from "../../hooks/useHTTP";
 import classes from "./CheckoutForm.module.css";
 import Modal from "./Modal";
+import { ICartItem } from "../Cart/Cart";
+import { databaseURL } from "../../App";
+
+interface IMealRequest extends ICartItem {
+  name: string;
+  address: string;
+}
 
 const validateText = (text: string) => {
   return text.trim().length > 0;
@@ -26,12 +34,25 @@ const CheckoutForm = ({ onClose }: { onClose: () => void }): JSX.Element => {
     reset: resetAddress,
   } = useInput(validateText);
 
+  const {
+    isLoading,
+    error,
+    sendHTTPRequest: postData,
+  } = useHTTP<IMealRequest[]>();
+
   const formIsValid = nameIsValid && addressIsValid;
 
   const formSubmissionHandler = (event: React.FormEvent) => {
     event.preventDefault();
     resetName();
     resetAddress();
+    /*postData(databaseURL, () => {}, {
+      method: "POST",
+      body: { text: taskText },
+      headers: {
+        "Content-Type": "requests/json",
+      },
+    });*/
     onClose();
   };
 

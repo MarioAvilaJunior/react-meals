@@ -7,8 +7,8 @@ interface IRequestConfig {
 }
 
 const useHTTP = <T>() => {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const sendHTTPRequest = React.useCallback(
     async (
