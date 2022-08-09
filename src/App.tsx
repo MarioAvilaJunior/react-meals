@@ -9,29 +9,19 @@ export const databaseURL =
   "https://react-academind-session15-default-rtdb.firebaseio.com/";
 
 const App = (): JSX.Element => {
-  const [showCart, setShowCart] = React.useState<boolean>(true);
-  const [showForm, setShowForm] = React.useState<boolean>(false);
+  const [showCart, setShowCart] = React.useState<boolean>(false);
 
   const closeCart = (): void => {
     setShowCart(false);
-  };
-
-  const closeForm = (): void => {
-    setShowForm(false);
   };
 
   const openCart = (): void => {
     setShowCart(true);
   };
 
-  const openForm = (): void => {
-    setShowForm(true);
-  };
-
   return (
     <CartProvider>
-      {showForm && <CheckoutForm onClose={closeForm} />}
-      {showCart && <Cart onCloseCart={closeCart} onOpenForm={openForm} />}
+      {showCart && <Cart onCloseCart={closeCart} />}
       <Header onShowCart={openCart} />
       <main>
         <Meals />

@@ -4,21 +4,28 @@ import classes from "./Cart.module.css";
 import { IMeal } from "../Meals/IMeal";
 import Modal from "../UI/Modal";
 import CartItem from "./CartItem";
+import CheckoutForm, { IUser } from "../UI/CheckoutForm";
+import useHTTP from "../../hooks/useHTTP";
+import { databaseURL } from "../../App";
 
 export interface ICartItem extends IMeal {
   amount: number;
 }
 
-interface ICartProps {
-  onCloseCart: () => void;
-  onOpenForm: () => void;
+interface IRequest {
+  user: IUser;
+  cart: ICartItem[];
 }
 
-const Cart = ({ onCloseCart, onOpenForm }: ICartProps): JSX.Element => {
+interface ICartProps {
+  onCloseCart: () => void;
+}
+
+const Cart = ({ onCloseCart }: ICartProps): JSX.Element => {
   const cartCtx = React.useContext(CartContext);
-
+  const [showForm, setShowForm] = React.useState<boolean>(false);
   const totalPrice = `$${cartCtx.totalPrice.toFixed(2)}`;
-
+  const { sendHTTPRequest: sendRequest } = useHTTP<IRequest>();
   const isValidOrder = cartCtx.items.length > 0;
 
   const removeItemHandler = (id: string) => {
@@ -27,6 +34,24 @@ const Cart = ({ onCloseCart, onOpenForm }: ICartProps): JSX.Element => {
 
   const addItemHandler = (item: ICartItem) => {
     cartCtx.addItem({ ...item, amount: 1 });
+  };
+
+  const closeForm = (): void => {
+    setShowForm(false);
+  };
+
+  const openForm = (): void => {
+    setShowForm(true);
+  };
+
+  const submitRequest = (userData: IUser) => {
+    fetch(databaseURL + "/requests.json", {
+      method: "POST",
+      body: JSON.stringify({
+        user: userData,
+        items: cartCtx.items,
+      }),
+    });
   };
 
   const cartItems = (
@@ -48,6 +73,19 @@ const Cart = ({ onCloseCart, onOpenForm }: ICartProps): JSX.Element => {
     </ul>
   );
 
+  const modalActions = (
+    <>
+      <button className={classes["button--alt"]} onClick={onCloseCart}>
+        Close
+      </button>
+      {isValidOrder && (
+        <button className={classes.button} onClick={openForm}>
+          Order
+        </button>
+      )}
+    </>
+  );
+
   return (
     <Modal onClick={onCloseCart}>
       {cartItems}
@@ -55,16 +93,10 @@ const Cart = ({ onCloseCart, onOpenForm }: ICartProps): JSX.Element => {
         <span>Total Amount</span>
         <span>{totalPrice}</span>
       </div>
-      <div className={classes.actions}>
-        <button className={classes["button--alt"]} onClick={onCloseCart}>
-          Close
-        </button>
-        {isValidOrder && (
-          <button className={classes.button} onClick={onOpenForm}>
-            Order
-          </button>
-        )}
-      </div>
+      {showForm && (
+        <CheckoutForm onClose={closeForm} onSubmitRequest={submitRequest} />
+      )}
+      <div className={classes.actions}>{!showForm && modalActions}</div>
     </Modal>
   );
 };
