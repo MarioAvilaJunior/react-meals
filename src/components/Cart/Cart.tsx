@@ -5,7 +5,6 @@ import { IMeal } from "../Meals/IMeal";
 import Modal from "../UI/Modal";
 import CartItem from "./CartItem";
 import CheckoutForm, { IUser } from "../UI/CheckoutForm";
-import useHTTP from "../../hooks/useHTTP";
 import { databaseURL } from "../../App";
 
 export interface ICartItem extends IMeal {
@@ -24,8 +23,9 @@ interface ICartProps {
 const Cart = ({ onCloseCart }: ICartProps): JSX.Element => {
   const cartCtx = React.useContext(CartContext);
   const [showForm, setShowForm] = React.useState<boolean>(false);
+  const [submitting, setSubmitting] = React.useState<boolean>(false);
+  const [submitted, setSubmitted] = React.useState<boolean>(false);
   const totalPrice = `$${cartCtx.totalPrice.toFixed(2)}`;
-  const { sendHTTPRequest: sendRequest } = useHTTP<IRequest>();
   const isValidOrder = cartCtx.items.length > 0;
 
   const removeItemHandler = (id: string) => {
@@ -44,14 +44,18 @@ const Cart = ({ onCloseCart }: ICartProps): JSX.Element => {
     setShowForm(true);
   };
 
-  const submitRequest = (userData: IUser) => {
-    fetch(databaseURL + "/requests.json", {
+  const submitRequest = async (userData: IUser) => {
+    setSubmitting(true);
+    await fetch(databaseURL + "/requests.json", {
       method: "POST",
       body: JSON.stringify({
         user: userData,
         items: cartCtx.items,
       }),
     });
+    setSubmitting(false);
+    setSubmitted(true);
+    cartCtx.resetCart();
   };
 
   const cartItems = (
@@ -86,8 +90,20 @@ const Cart = ({ onCloseCart }: ICartProps): JSX.Element => {
     </>
   );
 
-  return (
-    <Modal onClick={onCloseCart}>
+  const submittingCard = <div>Submitting request...</div>;
+  const requestSubmitted = (
+    <>
+      <p>Request submitted!</p>
+      <div className={classes.actions}>
+        <button className={classes.button} onClick={onCloseCart}>
+          Close
+        </button>
+      </div>
+    </>
+  );
+
+  const modal = (
+    <>
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
@@ -97,6 +113,13 @@ const Cart = ({ onCloseCart }: ICartProps): JSX.Element => {
         <CheckoutForm onClose={closeForm} onSubmitRequest={submitRequest} />
       )}
       <div className={classes.actions}>{!showForm && modalActions}</div>
+    </>
+  );
+  return (
+    <Modal onClick={onCloseCart}>
+      {submitted && requestSubmitted}
+      {submitting && submittingCard}
+      {!submitting && !submitted && modal}
     </Modal>
   );
 };

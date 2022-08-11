@@ -5,6 +5,7 @@ import { ICartItem } from "../components/Cart/Cart";
 enum CartActionType {
   ADD_CART_ITEM,
   REMOVE_CART_ITEM,
+  RESET_CART,
 }
 
 interface ICartAction {
@@ -69,6 +70,9 @@ const cartReducer = (state: ICartState, action: ICartAction): ICartState => {
         totalPrice: updatedTotalPrice,
       };
     }
+    case CartActionType.RESET_CART: {
+      return defaultCartState;
+    }
   }
 };
 
@@ -84,12 +88,16 @@ const CartProvider = (props: { children: React.ReactNode }): JSX.Element => {
   const removeItemFromCartHandler = (id: string): void => {
     dispatchCartAction({ type: CartActionType.REMOVE_CART_ITEM, id: id });
   };
+  const resetCartHandler = (): void => {
+    dispatchCartAction({ type: CartActionType.RESET_CART });
+  };
 
   const cartContext: ICart = {
     items: cartState.items,
     totalPrice: cartState.totalPrice,
     addItem: addItemToCartHandler,
     removeItem: removeItemFromCartHandler,
+    resetCart: resetCartHandler,
   };
 
   return (

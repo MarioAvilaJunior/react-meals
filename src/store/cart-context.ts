@@ -9,6 +9,7 @@ export interface ICartState {
 export interface ICart extends ICartState {
   addItem: (item: ICartItem) => void;
   removeItem: (id: string) => void;
+  resetCart: () => void;
 }
 
 const CartContext = React.createContext<ICart>({
@@ -16,6 +17,7 @@ const CartContext = React.createContext<ICart>({
   totalPrice: 0,
   addItem: (item) => {},
   removeItem: (id) => {},
+  resetCart: () => {},
 });
 
 export default CartContext;
